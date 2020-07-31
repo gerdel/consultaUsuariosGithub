@@ -1,0 +1,92 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container mt-5 ">
+        <h1 class="display-4 text-center ">Consulta Usuario en GITHUB</h1>
+        <input type="search" id="texto" class="form-control mt-3 p-3" placeholder="Consulta si un usuario existe en Github">
+        <button id="show" onkeyup="consultar()" class="btn btn-info mt-3 p-3">Consultar</button>
+    </div>
+
+    <div class="container-fluid table-responsive" id="result">
+
+    </div>
+
+    <script>
+        async function getUser(usuario) {
+            var texto = document.getElementById('texto').value;
+            var result = document.getElementById('result');
+            var url = `https://api.github.com/users/${texto}`;
+            const resultado = await fetch(url);
+            const json = await resultado.json();
+            if (resultado.status !== 200) {
+                throw ('No exite el usuario o ingresaste mal el nombre, intentalo de nuevo');
+
+            } else {
+                return json
+            }
+        }
+
+        async function consultar() {
+            try {
+                let user = await getUser(texto);
+                result.innerHTML = ` 
+                                    <table class="table table-sm mt-4 text-center text-white table-dark ">
+                                         <thead class=''>
+                                            <tr>
+                                                <th>ID Usuario</th>
+                                                <th>Nombre Usuario</th>
+                                                <th>Login</th>
+                                                <th>Pais y Ciudad</th>
+                                                <th>Correo Electronico</th>
+                                                <th>Blog</th>
+                                                <th>Comapñia</th>
+                                                <th>Seguidores</th>
+                                                <th>URL en Github</th>
+                                                <th>Usuario en Twitter</th>
+                                                <th>Repositorios</th>
+                                                <th>Tipo</th>
+                                                <th>Avatar</th>
+                                             </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>${user.id}</td>
+                                                    <td>${user.name}</td>
+                                                    <td>${user.login}</td>
+                                                    <td>${user.location}</td>
+                                                    <td>${user.email}</td>
+                                                    <td>${user.blog}</td>
+                                                    <td>${user.company}</td>
+                                                    <td>${user.followers}</td>
+                                                    <td>${user.html_url}</td>
+                                                    <td>${user.twitter_username}</td>
+                                                    <td>${user.repos_url}</td>
+                                                    <td>${user.type}</td>
+                                                    <td><img src='${user.avatar_url}' alt='${user.name}'></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    `
+
+            } catch (e) {
+                result.innerHTML = ` <div class="alert alert-danger text-center mt-4">
+                                            ${e}
+                                    </div>`
+            }
+        }
+
+        document.getElementById('show').addEventListener('click', function() {
+            consultar();
+        });
+
+        document.getElementById('texto').addEventListener('keyup', function() {
+            document.getElementById("show").click();
+        });
+    </script>
+</body>
+
+</html>
